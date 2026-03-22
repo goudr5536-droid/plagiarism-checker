@@ -61,7 +61,7 @@ def login():
 def do_login():
     username = request.form['username']
     password = request.form['password']
-    c.execute("SELECT * FROM users WHERE username="sreeja" AND password="1234"", (username, password))
+    c.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
     user = c.fetchone()
     if user:
         session['user_id'] = user[0]
