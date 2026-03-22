@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Similarity Checker</title>
+<style>
+body{font-family:Arial;background:#f4f6f9;text-align:center;padding:40px;}
+.container{background:white;padding:30px;border-radius:10px;width:70%;margin:auto;box-shadow:0 0 10px gray;}
+textarea{width:90%;height:100px;margin:5px;padding:10px;}
+input{padding:8px;margin:5px;}
+select{padding:8px;}
+button{padding:10px 20px;background:#007BFF;color:white;border:none;border-radius:5px;cursor:pointer;}
+button:hover{background:#0056b3;}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>Similarity Checker</h2>
+<form action="/check" method="POST">
+<select name="type">
+<option value="text">Text Similarity</option>
+<option value="code">Code Similarity</option>
+<option value="attendance">Attendance Similarity</option>
+<option value="marks">Marks Similarity</option>
+</select><br><br>
+
+<h3>Text Comparison</h3>
+<textarea name="text1" placeholder="Text 1"></textarea><br>
+<textarea name="text2" placeholder="Text 2"></textarea><br><br>
+
+<h3>Code Comparison</h3>
+<textarea name="code1" placeholder="Code 1"></textarea><br>
+<textarea name="code2" placeholder="Code 2"></textarea><br><br>
+
+<h3>Attendance Comparison</h3>
+<input type="number" name="att1" placeholder="Attendance 1">
+<input type="number" name="att2" placeholder="Attendance 2"><br><br>
+
+<h3>Marks Comparison</h3>
+<input type="number" name="m1" placeholder="Marks 1">
+<input type="number" name="m2" placeholder="Marks 2"><br><br>
+
+<button type="submit">Check Similarity</button>
+</form>
+<br>
+<a href="/logout">Logout</a>
+</div>
+</body>
+</html>

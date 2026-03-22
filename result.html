@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h2>Similarity Result</h2>
+
+    <h3>Text Similarity: {{ text_result }}%</h3>
+    <div class="progress">
+        <div class="progress-bar" style="width: {{ text_result }}%;"></div>
+    </div>
+
+    <h3>Code Similarity: {{ code_result }}%</h3>
+    <div class="progress">
+        <div class="progress-bar" style="width: {{ code_result }}%;"></div>
+    </div>
+
+    <br>
+    <a href="/checker"><button>Try Again</button></a>
+</div>
+</body>
+</html>
