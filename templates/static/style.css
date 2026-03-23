@@ -1,1 +1,46 @@
+body {
+    font-family: Arial;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+}
 
+.container {
+    width: 60%;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 50px;
+    text-align: center;
+}
+
+textarea {
+    width: 90%;
+    height: 100px;
+    margin: 10px;
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.green { background: green; }
+.red { background: red; }
+.orange { background: orange; }
+
+.progress {
+    width: 100%;
+    background: #ddd;
+    height: 20px;
+}
+
+.bar {
+    height: 20px;
+}
+
+mark {
+    background: yellow;
+}
