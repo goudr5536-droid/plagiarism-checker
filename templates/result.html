@@ -1,1 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Result</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
 
+<div class="container">
+
+<h2>Result</h2>
+
+<h3>{{ result }}%</h3>
+
+<div class="progress">
+<div class="bar 
+{% if result > 70 %}red
+{% elif result > 40 %}orange
+{% else %}green{% endif %}"
+style="width: {{ result }}%"></div>
+</div>
+
+<p><b>Language:</b> {{ lang1 }} / {{ lang2 }}</p>
+
+<h3>Highlighted Text</h3>
+<p>{{ text1|safe }}</p>
+<p>{{ text2|safe }}</p>
+
+{% if rewritten %}
+<h3>Rewritten Text</h3>
+<p>{{ rewritten }}</p>
+{% endif %}
+
+<br>
+<a href="/checker"><button class="green">Back</button></a>
+
+</div>
+
+</body>
+</html>
