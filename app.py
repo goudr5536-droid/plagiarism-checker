@@ -1,129 +1,119 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import sqlite3
-import nltk
-from nltk.tokenize import word_tokenize
-import langdetect
+from pypdf import PdfReader
 import os
 
-# Download NLTK punkt tokenizer if not already
-nltk.download('punkt')
-
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
 
-# Database setup
-conn = sqlite3.connect('plagiarism.db', check_same_thread=False)
-c = conn.cursor()
+# ---------- PREPROCESS ----------
+def preprocess(text):
+    return text.lower().strip()
 
-# Users table
-c.execute('''
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE,
-    password TEXT
-)
-''')
+# ---------- HIGHLIGHT ----------
+def highlight(text1, text2):
+    words1 = set(text1.split())
+    words2 = set(text2.split())
+    common = words1.intersection(words2)
 
-# Submissions table
-c.execute('''
-CREATE TABLE IF NOT EXISTS submissions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    content TEXT,
-    user_id INTEGER,
-    language TEXT,
-    similarity REAL
-)
-''')
-conn.commit()
+    def mark(text):
+        return " ".join([f"<mark>{w}</mark>" if w in common else w for w in text.split()])
 
-# Tokenized TF-IDF similarity
-def calculate_similarity(text1, text2):
-    # Tokenize both texts
-    tokens1 = word_tokenize(text1)
-    tokens2 = word_tokenize(text2)
-    # Join tokens back as string for TF-IDF
-    joined1 = " ".join(tokens1)
-    joined2 = " ".join(tokens2)
-    # TF-IDF vectors
-    vectorizer = TfidfVectorizer().fit([joined1, joined2])
-    vectors = vectorizer.transform([joined1, joined2])
-    sim_score = cosine_similarity(vectors[0], vectors[1])
-    return sim_score[0][0]
+    return mark(text1), mark(text2)
+#----------- READ FILE ------------#
+def read_file(file):
+    if file.filename.endswith('.txt'):
+        return file.read().decode('utf-8', errors='ignore')
 
-# Routes
+    elif file.filename.endswith('.pdf'):
+        reader = PdfReader(file)
+        text = ""
+        for page in reader.pages:
+            content = page.extract_text()
+            if content: text += content
+            
+        return text
+
+    else:
+        return ""
+
+# ---------- LANGUAGE DETECTION ----------
+def detect_language(code):
+    code = code.lower()
+
+    if "public static void main" in code:
+        return "Java"
+    elif "#include" in code:
+        return "C"
+    elif "cout" in code:
+        return "C++"
+    elif "def " in code:
+        return "Python"
+    elif "console.log" in code:
+        return "JavaScript"
+    else:
+        return "Text"
+
+# ---------- REWRITE ----------
+def rewrite(text):
+    words = text.split()
+    return " ".join(words[::-1])
+
+# ---------- ROUTES ----------
+
 @app.route('/')
-def login():
-    return render_template('login.html')
+def home():
+    return render_template("login.html")
 
-@app.route('/login', methods=['POST'])
-def do_login():
-    username = request.form['username']
-    password = request.form['password']
-    c.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
-    user = c.fetchone()
-    if user:
-        session['user_id'] = user[0]
-        return redirect(url_for('checker'))
-    else:
-        return "Invalid credentials! <a href='/'>Try again</a>"
 
-@app.route('/checker')
+@app.route('/checker', methods=['GET', 'POST'])
 def checker():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    return render_template('checker.html')
 
-@app.route('/check', methods=['POST'])
-def check():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    content = request.form['content']
-    user_id = session['user_id']
+    if request.method == 'POST':
 
-    # Language detection
-    try:
-        language = langdetect.detect(content)
-    except:
-        language = 'unknown'
+        text1 = request.form.get('text1', '')
+        text2 = request.form.get('text2', '')
+        rewrite_text = request.form.get('rewrite', '')
 
-    # Compare with previous submissions
-    c.execute("SELECT content FROM submissions")
-    rows = c.fetchall()
-    max_similarity = 0
-    for row in rows:
-        sim = calculate_similarity(content, row[0])
-        if sim > max_similarity:
-            max_similarity = sim
+        file1 = request.files.get('file1')
+        file2 = request.files.get('file2')
 
-    # Save submission
-    c.execute("INSERT INTO submissions (content, user_id, language, similarity) VALUES (?, ?, ?, ?)",
-              (content, user_id, language, max_similarity))
-    conn.commit()
+        if file1 and file1.filename:
+            text1 = read_file(file1)
 
-    # Progress bar color
-    if max_similarity < 0.3:
-        color = "green"
-    elif max_similarity < 0.7:
-        color = "orange"
-    else:
-        color = "red"
+        if file2 and file2.filename:
+            text2 = read_file(file2)
 
-    return jsonify({
-        "similarity": round(max_similarity*100, 2),
-        "color": color,
-        "language": language
-    })
+        if not text1.strip() or not text2.strip():
+            return "Please enter both texts"
 
-@app.route('/result')
-def result():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    c.execute("SELECT content, similarity, language FROM submissions WHERE user_id=? ORDER BY id DESC", (session['user_id'],))
-    submissions = c.fetchall()
-    return render_template('result.html', submissions=submissions)
+        t1 = preprocess(text1)
+        t2 = preprocess(text2)
 
-if __name__ == '__main__':
-    port=int(os.environ.get("PORT",5000))
-    app.run(host='0.0.0.0, port=port')
+        tfidf = TfidfVectorizer()
+        vectors = tfidf.fit_transform([t1, t2])
+        similarity = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
+        percent = round(similarity * 100, 2)
+
+        h1, h2 = highlight(text1, text2)
+
+        lang1 = detect_language(text1)
+        lang2 = detect_language(text2)
+
+        rewritten = rewrite(rewrite_text) if rewrite_text else ""
+
+        return render_template("result.html",
+                               result=percent,
+                               text1=h1,
+                               text2=h2,
+                               lang1=lang1,
+                               lang2=lang2,
+                               rewritten=rewritten)
+
+    return render_template("checker.html")
+
+
+# ---------- RUN ----------
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)

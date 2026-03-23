@@ -1,35 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Checker - Plagiarism</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<title>Checker</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h2>Plagiarism Checker</h2>
-        <textarea id="content" placeholder="Paste your text or code..."></textarea>
-        <button id="checkBtn">Check Similarity</button>
-        <div id="result">
-            <p>Similarity: <span id="simPercent">0%</span></p>
-            <div class="progress">
-                <div id="progressBar"></div>
-            </div>
-            <p>Detected Language: <span id="lang"></span></p>
-        </div>
-        <a href="/result">View All Results</a>
-    </div>
 
-<script>
-$('#checkBtn').click(function() {
-    $.post('/check', { content: $('#content').val() }, function(data) {
-        $('#simPercent').text(data.similarity + '%');
-        $('#progressBar').css('width', data.similarity + '%');
-        $('#progressBar').css('background-color', data.color);
-        $('#lang').text(data.language);
-    });
-});
-</script>
+<div class="container">
+
+<h2>Plagiarism Checker</h2>
+
+<form method="POST" enctype="multipart/form-data">
+
+<textarea name="text1" placeholder="Enter Text 1"></textarea>
+<textarea name="text2" placeholder="Enter Text 2"></textarea>
+
+<h3>Upload Files</h3>
+<input type="file" name="file1">
+<input type="file" name="file2">
+
+<h3>Remove Plagiarism</h3>
+<textarea name="rewrite" placeholder="Rewrite text here"></textarea>
+
+<br>
+<button class="green">Check Similarity</button>
+<button type="reset" class="red">Delete</button>
+
+</form>
+
+</div>
+
 </body>
 </html>

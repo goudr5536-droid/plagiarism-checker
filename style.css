@@ -1,55 +1,46 @@
 body {
-    font-family: Arial, sans-serif;
-    background: #f2f2f2;
-    text-align: center;
-    padding: 50px;
+    font-family: Arial;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
 }
+
 .container {
-    background: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    width: 50%;
+    width: 60%;
     margin: auto;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 50px;
+    text-align: center;
 }
+
 textarea {
-    width: 100%;
-    height: 200px;
-    margin-bottom: 20px;
-    padding: 10px;
-    font-size: 16px;
+    width: 90%;
+    height: 100px;
+    margin: 10px;
 }
-input {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0;
-    font-size: 16px;
-}
+
 button {
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 10px;
+    margin: 5px;
+    border: none;
+    color: white;
     cursor: pointer;
 }
+
+.green { background: green; }
+.red { background: red; }
+.orange { background: orange; }
+
 .progress {
     width: 100%;
     background: #ddd;
-    height: 25px;
-    border-radius: 5px;
-    margin-top: 10px;
+    height: 20px;
 }
-#progressBar {
-    height: 100%;
-    width: 0%;
-    border-radius: 5px;
+
+.bar {
+    height: 20px;
 }
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-table, th, td {
-    border: 1px solid #ccc;
-}
-th, td {
-    padding: 10px;
+
+mark {
+    background: yellow;
 }
