@@ -21,18 +21,30 @@ def highlight(text1, text2):
 
     return mark(text1), mark(text2)
 #----------- READ FILE ------------#
+from pypdf import PdfReader
+
 def read_file(file):
     if file.filename.endswith('.txt'):
         return file.read().decode('utf-8', errors='ignore')
 
     elif file.filename.endswith('.pdf'):
-        reader = PdfReader(file)
-        text = ""
-        for page in reader.pages:
-            content = page.extract_text()
-            if content: text += content
-            
-        return text
+        try:
+            reader = PdfReader(file)
+            text = ""
+
+            for page in reader.pages:
+                content = page.extract_text()
+                if content:
+                    text += content
+
+            # If empty → scanned PDF
+            if text.strip() == "":
+                return "PDF has no readable text"
+
+            return text
+
+        except Exception as e:
+            return "Error reading PDF"
 
     else:
         return ""
