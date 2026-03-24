@@ -5,6 +5,13 @@ from pypdf import PdfReader
 import os
 
 app = Flask(__name__)
+# ---- STOPWORDS FUNCTION ----
+stop_words = {'the','is','and','in','of','to','a','an','for','on','with','as','by','at'}
+
+def remove_stopwords(text):
+    words = text.split()
+    filtered = [w for w in words if w.lower() not in stop_words]
+    return " ".join(filtered)
 
 # ---------- PREPROCESS ----------
 def preprocess(text):
@@ -123,6 +130,21 @@ def checker():
                                rewritten=rewritten)
 
     return render_template("checker.html")
+
+@app.route('/remove_stopwords', methods=['POST'])
+def remove_sw():
+    text1 = request.form['text1']
+    text2 = request.form['text2']
+
+    clean1 = remove_stopwords(text1)
+    clean2 = remove_stopwords(text2)
+
+    return render_template('result.html',
+                           text1=clean1,
+                           text2=clean2,
+                           result="Stopwords Removed",
+                           lang1="Text",
+                           lang2="Text")
 
 
 # ---------- RUN ----------
