@@ -133,18 +133,23 @@ def checker():
 
 @app.route('/remove_stopwords', methods=['POST'])
 def remove_sw():
-    text1 = request.form.get('text1',' ')
-    text2 = request.form.get('text2',' ')
+    try:
+        text1 = request.form.get('text1', '')
+        text2 = request.form.get('text2', '')
 
-    clean1 = remove_stopwords(text1)
-    clean2 = remove_stopwords(text2)
+        clean1 = remove_stopwords(text1)
+        clean2 = remove_stopwords(text2)
 
-    return render_template('result.html',
-                           text1=clean1,
-                           text2=clean2,
-                           result="Stopwords Removed",
-                           lang1="Text",
-                           lang2="Text")
+        return render_template(
+            'result.html',
+            text1=clean1,
+            text2=clean2,
+            result=0,          # important (page break avvakunda)
+            lang1="Text",
+            lang2="Text"
+        )
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 
 # ---------- RUN ----------
