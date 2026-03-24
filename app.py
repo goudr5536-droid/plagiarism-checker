@@ -37,17 +37,17 @@ def read_file(file):
                 if content:
                     text += content
 
-            # If empty → scanned PDF
             if text.strip() == "":
                 return "PDF has no readable text"
 
             return text
 
-        except Exception as e:
+        except:
             return "Error reading PDF"
 
     else:
         return ""
+
 
 # ---------- LANGUAGE DETECTION ----------
 def detect_language(code):
@@ -102,7 +102,7 @@ def checker():
         t1 = preprocess(text1)
         t2 = preprocess(text2)
 
-        tfidf = TfidfVectorizer()
+        tfidf = TfidfVectorizer(stop_words="english")
         vectors = tfidf.fit_transform([t1, t2])
         similarity = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
         percent = round(similarity * 100, 2)
