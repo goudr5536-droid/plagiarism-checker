@@ -32,11 +32,7 @@ style="width: {{ result }}%"></div>
 {% endif %}
 
 <br>
-<form action="/remove_stopwords" method="post" style="display:inline;">
-    <input type="hidden" name="text1" value="{{ text1 }}">
-    <input type="hidden" name="text2" value="{{ text2 }}">
-    <button class="green">Remove Stopwords</button>
-</form>
+
 
 <form action="/remove_stopwords" method="post" style="display:inline;">
     <input type="hidden" name="text1" value="{{ text1 }}">

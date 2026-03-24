@@ -133,8 +133,8 @@ def checker():
 
 @app.route('/remove_stopwords', methods=['POST'])
 def remove_sw():
-    text1 = request.form['text1']
-    text2 = request.form['text2']
+    text1 = request.form.get('text1',' ')
+    text2 = request.form.get('text2',' ')
 
     clean1 = remove_stopwords(text1)
     clean2 = remove_stopwords(text2)
